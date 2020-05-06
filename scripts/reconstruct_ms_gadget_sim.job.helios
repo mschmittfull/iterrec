@@ -1,0 +1,51 @@
+#!/bin/bash -l
+
+#SBATCH -t 04:00:00
+# number of processors (helios has 28 cores per node; 896 is half cluster)
+#SBATCH -n 28
+#SBATCH --mem=120GB
+#SBATCH --export=ALL
+#SBATCH -V
+#SBATCH --mail-user=mschmittfull@gmail.com
+#SBATCH --mail-type=ALL
+#SBATCH --output=slurm-%x.o%j
+#SBATCH --error=slurm-%x.e%j
+#SBATCH -J rec
+#SBATCH --exclusive
+# #SBATCH --dependency=afterok:7655459
+
+set -x
+
+module load helios
+module load openmpi/1.10.7_gcc-4.8.5
+module load gsl/gcc-4.8.5/2.4
+
+export MPICH_GNI_MBOXES_PER_BLOCK=4096
+export OMP_NUM_THREADS=2
+
+conda activate nbodykit-0.3.7-env
+
+myscript=reconstruct_ms_gadget_sim.py_$(date +%s%N)
+cp reconstruct_ms_gadget_sim.py $myscript
+
+
+# start script
+Nmesh=512
+Nsteps=8
+input_scale_factor=0.625
+redshift_of_true_linear_density=0.0
+
+for simseed in 400
+do
+    #input_catalog="$SCRATCH/lss/ms_gadget/run4/00000$simseed-01536-500.0-wig/snap_0.6250_sub_sr0.00025_ssseed40400.bigfile"
+    input_catalog="$SCRATCH/lss/ms_gadget/run4/00000$simseed-01536-500.0-wig/snap_0.6250_sub_sr0.025_ssseed40400.bigfile"
+    true_linear_density="$SCRATCH/lss/ms_gadget/run4/00000$simseed-01536-500.0-wig/IC_LinearMesh_z0_Ng$Nmesh"
+    out_density="$SCRATCH/lss/ms_gadget/run4/00000$simseed-01536-500.0-wig/rec/reconstructed_density.bigfile"
+	
+    # It seems best to use half of requested processors
+    srun -n 14 python $myscript --compute_power --Nmesh=$Nmesh --Nsteps=$Nsteps --input_catalog=$input_catalog --true_linear_density=$true_linear_density --out_density=$out_density --input_scale_factor=$input_scale_factor --redshift_of_true_linear_density=$redshift_of_true_linear_density
+done
+
+        
+conda deactivate                
+
