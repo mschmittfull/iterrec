@@ -17,6 +17,9 @@ Running in notebook
 
   .. code-block:: python
 
+    from iterrec import reconstruction as rec
+    from iterrec.smoothing import GaussianSmoother
+
     # Reconstruction settings
     smoothers = []
     smoothers.append(GaussianSmoother(
