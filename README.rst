@@ -6,8 +6,9 @@ The code reads a clustered catalog of objects and performs reconstruction.
 The current implementation supports dark matter in real space.
 For details of the algorithm see https://arxiv.org/abs/1704.06634.
 
-Running in notebook
--------------------
+
+Running in a notebook
+---------------------
 
 - To run the code in a notebook, see `reconstruction_test.ipynb`_.
 
@@ -42,22 +43,11 @@ Running in notebook
     # Run reconstruction
     mesh_deltalin_rec = reconstructor.reconstruct_linear_density_from_catalog(cat)
 
+
 Running from the command line
 -----------------------------
 
-- To run the code from the command line, see `reconstruct_ms_gadget_sim.py`_. 
-
-.. _reconstruct_ms_gadget_sim.py: scripts/reconstruct_ms_gadget_sim.py
-
-- For an example SLURM script to run on a cluster see `reconstruct_ms_gadget_sim.job.helios`_.
-
-.. _reconstruct_ms_gadget_sim.job.helios: scripts/reconstruct_ms_gadget_sim.job.helios
-
-- When running the script, the rms displacements in each iteration step and the rms density after each displacement step are displayed. Ideally both should decrease with every step.
-
-- The script saves the reconstructed linear density to disk. If the optional --compute_power argument is set, the script also computes power spectra of the input catalog and the reconstructed linear density.
-
-- General usage: 
+- To run the code from the command line, see `reconstruct_ms_gadget_sim.py`_. General usage:
 
   .. code-block:: bash
 
@@ -70,11 +60,19 @@ Running from the command line
                                     [--out_density OUT_DENSITY]
                                     [--out_power OUT_POWER]
 
-- On a cluster: 
+.. _reconstruct_ms_gadget_sim.py: scripts/reconstruct_ms_gadget_sim.py
+
+- For an example SLURM script to run on a cluster, see `reconstruct_ms_gadget_sim.job.helios`_ and use  
 
   .. code-block:: bash
 
-    $ sbatch reconstruct_ms_gadget_sim.job.helios
+    $ sbatch scripts/reconstruct_ms_gadget_sim.job.helios
+
+.. _reconstruct_ms_gadget_sim.job.helios: scripts/reconstruct_ms_gadget_sim.job.helios
+
+- When running the script, the rms displacements in each iteration step and the rms density after each displacement step are displayed. Ideally both should decrease with every step.
+
+- The output of the script is the reconstructed linear density, which is saved to disk. If the optional --compute_power argument is set, the script also computes power spectra of the input catalog and the reconstructed linear density and saves them to disk.
 
 - The runtime depends on the reconstruction settings and the size of the input catalog. For example, running 8 iteration steps with Nmesh=512 on an input catalog with 90 million particles takes 10 minutes on 14 cores.
 
