@@ -78,7 +78,8 @@ def get_cstat(data, statistic, comm=None):
         csize = comm.allreduce(data.size, op=MPI.SUM)
         return csum / float(csize)
     elif statistic == 'rms':
-        rsum = comm.allreduce((data**2).sum())
+        mean = get_cmean(data, comm=comm)
+        rsum = comm.allreduce(((data-mean)**2).sum())
         csize = comm.allreduce(data.size)
         rms = (rsum / float(csize))**0.5
         return rms
