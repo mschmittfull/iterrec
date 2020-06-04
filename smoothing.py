@@ -1,12 +1,9 @@
 from __future__ import print_function, division
 
 from collections import Counter, OrderedDict
-from copy import copy
 import numpy as np
 
 from nbodykit.source.mesh.field import FieldMesh
-
-from utils import catalog_persist, get_cstats_string, get_displacement_from_density_rfield, calc_divergence_of_3_meshs, mass_weighted_paint_cat_to_delta, avg_value_mass_weighted_paint_cat_to_rho, readout_mesh_at_cat_pos
 
 
 class Smoother(object):
@@ -50,7 +47,8 @@ class GaussianSmoother(Smoother):
         return kernel_fcn
 
     def apply_smoothing_of_Nth_iteration(self, N, meshsource):
-        out = copy(meshsource)
+        # make a copy
+        out = FieldMesh(meshsource.compute(mode='complex'))
         kernel_fcn = self.get_smoothing_kernel_of_Nth_iteration(N=N)
         out = out.apply(kernel_fcn, kind='wavenumber', mode='complex')
         return out
